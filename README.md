@@ -118,13 +118,15 @@ You need to give the *deployment-id* which was given as input to the *setup* pro
 The delete process fetches the bucket name belonging to the given *deployment-id* from the metadata. All the resources belonging to the given *deployment-id* are deleted. The IAM User, S3 bucket, Secret and metadata stored in the SSM Parameter store can be deleted manually. 
 
 <a name="operations"></a>
+
 ## Operations
 
-A URL to suppress the notifications is provided in the messages sent to the subscribes email or MS teams channel. Using that url you can *suppress future notifications* of alarms for a particular ec2 instance. 
-
-You can set up alarms with periods by modifying below SSM parameters. 
-
-
+After deploying **riFT** you can use below script to create alarms for existing instances. You can also modify alarm Period, Datapoints, and Evaluation Periods by executing the below script. The script takes *deployment-id* as input.  
+```
+cd backend/bin
+./maintenance.sh
+```
+It puts the new values in below SSM parameter params and then publish *update* or *create* notifications.
 */rift/**deployment-id**/config/alarms/period* 
 
 
@@ -139,12 +141,16 @@ Refer [CloudWatch Alarms](https://docs.aws.amazon.com/AmazonCloudWatch/latest/mo
 <a name="notification"></a>
 
 ## Notification
-
+#### Recieve notification
 Subscribe to the SNS topic *receive-ec2-notifications-**deployment-id*** with email address to recieve notifications.
 As part of the alert two notifications are sent out - one to the email address and other to the MS teams channel if you have provided the webhook in the ssm parameter store param 
 
 
 */rift/**deployment-id**/config/subscribers/ms-teams/webhook/url*
+
+#### Suppress notification
+
+A pre-signed URL to suppress the notifications is provided in the messages, sent to the subscribes email addresses and MS teams channel. Using the url you can *suppress future notifications* of alarms for a particular ec2 instance. You can remove the tag *SuppressCpuCreditAlarm* from EC2 instance to reset the supression.
 
 
 The MS teams notification looks as below - it has latest CPU Utilization metric, CPU Credit Balance metric and optional Processes CPU Usage metric.
