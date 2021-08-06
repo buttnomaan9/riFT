@@ -120,7 +120,7 @@ The delete process fetches the bucket name belonging to the given *deployment-id
 <a name="operations"></a>
 ## Operations
 
-A URL to suppress the notifications is provided in the messages sent to the subscribes email or MS teams channel. Using that url you can *suppress future notifications* of alarms for a particular ec2 instance. 
+A URL to suppress the notifications is provided in the messages sent to the subscribes email or MS teams channel. Using that url you can *suppress future notifications* of alarms for a particular ec2 instance. You can remove the tag SuppressCpuCreditAlarm from EC2 instance to reset the supression.
 
 You can create alarms for existing instances and modify alarm Period, Datapoints, and Evaluation Periods by executing the below script.   
 ```
