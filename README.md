@@ -122,9 +122,12 @@ The delete process fetches the bucket name belonging to the given *deployment-id
 
 A URL to suppress the notifications is provided in the messages sent to the subscribes email or MS teams channel. Using that url you can *suppress future notifications* of alarms for a particular ec2 instance. 
 
-You can set up alarms with periods by modifying below SSM parameters. 
-
-
+You can create alarms for existing instances and modify alarm Period, Datapoints, and Evaluation Periods by executing the below script.   
+```
+cd backend/bin
+./maintenance.sh
+```
+The script puts the new values at below SSM parameter params and then publish *update* or *create* notifications.
 */rift/**deployment-id**/config/alarms/period* 
 
 
