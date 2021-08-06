@@ -1,4 +1,4 @@
-# riFT - An elastic EC2 instance monitoring tool.
+# riFT - An elastic EC2 instance monitoring tool that put cost first. 
 
 ## Table of contents
 * [Inspiration](#inspiration)
