@@ -148,6 +148,10 @@ As part of the alert two notifications are sent out - one to the email address a
 
 */rift/**deployment-id**/config/subscribers/ms-teams/webhook/url*
 
+#### Suppress notification
+
+A pre-signed URL to suppress the notifications is provided in the messages, sent to the subscribes email addresses and MS teams channel. Using the url you can *suppress future notifications* of alarms for a particular ec2 instance. You can remove the tag *SuppressCpuCreditAlarm* from EC2 instance to reset the supression.
+
 
 The MS teams notification looks as below - it has latest CPU Utilization metric, CPU Credit Balance metric and optional Processes CPU Usage metric.
 
@@ -169,6 +173,3 @@ The MS teams notification looks as below - it has latest CPU Utilization metric,
 The processes metric require CloudWatch agent with procstats plugin configured. Refer [AWS Documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-procstat-process-metrics.html). 
 ![Notification](./backend/images/cpu_processes_metric.png)
 
-#### Suppress notification
-
-A pre-signed URL to suppress the notifications is provided in the messages, sent to the subscribes email addresses and MS teams channel. Using the url you can *suppress future notifications* of alarms for a particular ec2 instance. You can remove the tag *SuppressCpuCreditAlarm* from EC2 instance to reset the supression.
