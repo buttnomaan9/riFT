@@ -47,7 +47,7 @@ def lambda_handler(event, context):
 
     except (Exception, ClientError) as err:
         print(err)
-        print('Aborted because of above error')
+        print('Aborted! because of above error.')
         return err
     else:
         print(f'Successfully executed')

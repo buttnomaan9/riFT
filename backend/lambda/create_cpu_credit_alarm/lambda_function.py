@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from collections import namedtuple
 from botocore.config import Config
 from dataclasses import dataclass
+
 custom_boto3_config = Config(
    retries = {
       'max_attempts': 10,
@@ -17,25 +18,32 @@ cloudwatch_client = boto3.client('cloudwatch',config=custom_boto3_config)
 event_bridge = boto3.client('events',config=custom_boto3_config)
 ssm_client  = boto3.client('ssm',config=custom_boto3_config)
 
-InstanceTypesSpecs = namedtuple(
-    'InstanceTypesSpecs', ['instance_type', 'max_cpu_credit', 'vCPU_count'])
+EC2typeSpec = namedtuple(
+    'EC2typeSpec', ['instance_type', 'max_cpu_credit', 'vCPU_count'])
 
 '''Credit table'''
-instances_credit_table: Dict[str, InstanceTypesSpecs] = {
-    't3.nano': InstanceTypesSpecs('t2.nano', 144, 2),
-    't3.micro': InstanceTypesSpecs('t3.micro', 288, 2),
-    't3.small': InstanceTypesSpecs('t3.small', 576, 2),
-    't3.medium': InstanceTypesSpecs('t3.medium', 576, 2),
-    't3.large': InstanceTypesSpecs('t3.large', 864, 2),
-    't3.xlarge': InstanceTypesSpecs('t3.xlarge', 2304, 4),
-    't3.2xlarge': InstanceTypesSpecs('t3.2xlarge', 4608, 8),
-    't3a.nano': InstanceTypesSpecs('t3a.nano', 144, 2),
-    't3a.micro': InstanceTypesSpecs('t3a.micro', 288, 2),
-    't3a.small': InstanceTypesSpecs('t3a.small', 576, 2),
-    't3a.medium': InstanceTypesSpecs('t3a.medium', 576, 2),
-    't3a.large': InstanceTypesSpecs('t3a.large', 864, 2),
-    't3a.xlarge': InstanceTypesSpecs('t3a.xlarge', 2304, 4),
-    't3a.2xlarge': InstanceTypesSpecs('t3a.2xlarge', 4608, 8),
+instances_credit_table: Dict[str, EC2typeSpec] = {
+    't3.nano': EC2typeSpec('t3.nano', 144, 2),
+    't3.micro': EC2typeSpec('t3.micro', 288, 2),
+    't3.small': EC2typeSpec('t3.small', 576, 2),
+    't3.medium': EC2typeSpec('t3.medium', 576, 2),
+    't3.large': EC2typeSpec('t3.large', 864, 2),
+    't3.xlarge': EC2typeSpec('t3.xlarge', 2304, 4),
+    't3.2xlarge': EC2typeSpec('t3.2xlarge', 4608, 8),
+    't3a.nano': EC2typeSpec('t3a.nano', 144, 2),
+    't3a.micro': EC2typeSpec('t3a.micro', 288, 2),
+    't3a.small': EC2typeSpec('t3a.small', 576, 2),
+    't3a.medium': EC2typeSpec('t3a.medium', 576, 2),
+    't3a.large': EC2typeSpec('t3a.large', 864, 2),
+    't3a.xlarge': EC2typeSpec('t3a.xlarge', 2304, 4),
+    't3a.2xlarge': EC2typeSpec('t3a.2xlarge', 4608, 8),
+    't4g.nano': EC2typeSpec('t4g.nano', 144, 2),
+    't4g.micro': EC2typeSpec('t4g.micro', 288, 2),
+    't4g.small': EC2typeSpec('t4g.small', 576, 2),
+    't4g.medium': EC2typeSpec('t4g.medium', 576, 2),
+    't4g.large': EC2typeSpec('t4g.large', 864, 2),
+    't4g.xlarge': EC2typeSpec('t4g.xlarge', 2304, 4),
+    't4g.2xlarge': EC2typeSpec('t4g.2xlarge', 4608, 8)
 }
 
 launch_credits: Dict[str, float] = {
@@ -61,39 +69,34 @@ def lambda_handler(event, context):
     notification events.
     Threshold,metric period,datapoints and evaluation period 
     are provided as input. 
-    The instance should have a Name tage otherwise the alarm will not be created.
     The threshold for t2 class is set to the launch credits.'''
     
     out_event: Dict[str, Any] = {}
     compute_intensive_workloads_regix_list: List[str] = []
     compute_intensive_workloads_regix_env: str = os.environ.get(
         'COMPUTE_INTENSIVE_WORKLOADS_REGIX_LIST')
-    if compute_intensive_workloads_regix_env is not None:
-        compute_intensive_workloads_regix_list = compute_intensive_workloads_regix_env.split(
-            ',')
+    if compute_intensive_workloads_regix_env:
+        compute_intensive_workloads_regix_list = compute_intensive_workloads_regix_env.split(',')
     # Get the alarm configration data from ssm parameter store.
     config:AlarmConfigurationParams = get_configuration_data()
-    
     print('Running for below arguments.')
-    print(
-        f'threshold={config.threshold} period={config.period} datapoints={config.datapoints} evaluation_periods={config.evaluation_periods}')
+    print(f'threshold={config.threshold} period={config.period} datapoints={config.datapoints} evaluation_periods={config.evaluation_periods}')
 
     try:
-        print(f'{event}')
+        print(event)
         instance_id: str = event['detail']['instance-id']
         out_event['instance-id'] = instance_id
         instance = ec2_resource.Instance(instance_id)
         instance_type = instance.instance_type
 
-        print(f'{instance_type}')
-        first_two_character_of_type: str = instance_type[0:2]
+        print(instance_type)
+        first_two_character_of_type: str = instance_type[:2]
 
         print(f'Instance class: {first_two_character_of_type}')
 
         if first_two_character_of_type == 't2':
-            print(f'As the instance is of t2 class set threshold as the launch credit')
+            print('As the instance is of t2 class set threshold as the launch credit')
             config.threshold = launch_credits[instance_type]
-
         '''Get the tags to name the alarm'''
         tags: List[Dict[str, str]] = instance.tags
         name: str = ''
@@ -132,7 +135,7 @@ def lambda_handler(event, context):
 
     except Exception as err:
         print(err)
-        print('Aborted because of above error')
+        print('Aborted! because of above error.')
         raise err
     else:
         print('Successfully completed')
@@ -156,20 +159,22 @@ def lambda_handler(event, context):
 def put_cpu_credit_balance_alarm_for_below_th(alarm_name: str,
                                               instance_id: str,
                                               instance_type: str,
-                                              credits_used_per_vcpu_hour: float,
+                                              credits_used_per_vcpu_per_hour: float,
                                               period: int,
                                               datapoints: int,
                                               evaluation_periods: int,
                                               instance_class: str):
     '''This function creates or updates a CPUCreditBalance alarm.
-    If the alarm does not exist a new alarm is created or else existing alarm is updated'''
+    If the alarm does not exist a new alarm is created or else existing alarm is updated.
+    1 CPU credit = 1 vCPU * 100% utilization * 1 minute.
+    '''
 
     desc: str = ''
     threshold: float = 0.0
     if instance_class != 't2':
-        print(f'Use given threshold value.')
+        print('Calculate threshold value using credit table.')
         threshold = instances_credit_table[instance_type].vCPU_count * \
-            credits_used_per_vcpu_hour
+            credits_used_per_vcpu_per_hour
         _80_percent_of_max_credit: float = .8 * \
             int(instances_credit_table[instance_type].max_cpu_credit)
         _20_percent_of_max_credit: float = .2 * \
@@ -181,7 +186,7 @@ def put_cpu_credit_balance_alarm_for_below_th(alarm_name: str,
     else:
         # Use launch credit as threshold
         print('Use launch credit as threshold.')
-        threshold = credits_used_per_vcpu_hour
+        threshold = credits_used_per_vcpu_per_hour
         desc = 'Raise alarm when CPUCreditBalance drops below launch credit: {}'.format(
             threshold)
 
@@ -223,17 +228,17 @@ def put_cpu_credit_balance_alarm_for_below_th(alarm_name: str,
 # Get config values from parameter store.
 def get_configuration_data():
     try:
-        get_threshold:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('THRESHOLD'))
-        threshold = get_threshold['Parameter']['Value']
+        threshold_data:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('THRESHOLD'))
+        threshold = threshold_data['Parameter']['Value']
 
-        get_period:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('PERIOD'))
-        period = get_period['Parameter']['Value']
+        period_data:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('PERIOD'))
+        period = period_data['Parameter']['Value']
 
-        get_datapoints:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('DATAPOINTS'))
-        datapoints = get_datapoints['Parameter']['Value']
+        datapoints_data:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('DATAPOINTS'))
+        datapoints = datapoints_data['Parameter']['Value']
 
-        get_evaluation_periods:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('EVALUATION_PERIODS'))
-        evaluation_periods = get_evaluation_periods['Parameter']['Value']
+        evaluation_periods_data:Dict[str,Any] = ssm_client.get_parameter(Name=os.environ.get('EVALUATION_PERIODS'))
+        evaluation_periods = evaluation_periods_data['Parameter']['Value']
     except Exception as err:
         print(err)
         raise err
