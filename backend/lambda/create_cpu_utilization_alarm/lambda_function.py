@@ -38,7 +38,14 @@ baseline_cpu_utilization: Dict[str, float] = {
     't3a.medium': 20,
     't3a.large': 30,
     't3a.xlarge': 40,
-    't3a.2xlarge': 40
+    't3a.2xlarge': 40,
+    't4g.nano': 5,
+    't4g.micro': 10,
+    't4g.small': 20,
+    't4g.medium': 20,
+    't4g.large': 30,
+    't4g.xlarge': 40,
+    't4g.2xlarge': 40
 }
 
 @dataclass
@@ -117,7 +124,7 @@ def lambda_handler(event, context):
 
     except Exception as err:
         print(err)
-        print('Aborted because of above error')
+        print('Aborted! because of above error.')
         raise err
     else:
         print('Successfully completed')

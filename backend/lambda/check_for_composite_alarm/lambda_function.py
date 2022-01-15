@@ -70,8 +70,8 @@ def lambda_handler(event, context):
 
     except Exception as err:
         print(err)
-        print('Aborted because of above error')
+        print('Aborted! because of above error.')
         raise err
     else:
-        print(f'Successfully executed')
+        print('Successfully executed')
         return out_event

@@ -73,7 +73,7 @@ def lambda_handler(event, context):
 
     except (Exception, ClientError) as err:
         print(err)
-        print('Aborted because of above error.')
+        print('Aborted! because of above error..')
     else:
         print(f'Total number of events published is {count}')
         print('Successfully completed.')
