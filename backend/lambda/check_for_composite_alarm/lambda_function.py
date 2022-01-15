@@ -51,7 +51,7 @@ def lambda_handler(event, context):
         print('')
 
         if len(existing_alarms['CompositeAlarms']) == 0:
-            print(f'Alarm not found. Create an alarm.')
+            print('Alarm not found. Create an alarm.')
             out_event['function-name'] = [context.function_name]
             out_event['function-outcome'] = [os.environ.get('FN_OUTCOME')]
             complete_out_event: Dict[str, Any] = {
@@ -66,7 +66,7 @@ def lambda_handler(event, context):
             )
             print(f'{response}')
         else:
-            print(f'Alarm already exists. Do not create new.')
+            print('Alarm already exists. Do not create new.')
 
     except Exception as err:
         print(err)

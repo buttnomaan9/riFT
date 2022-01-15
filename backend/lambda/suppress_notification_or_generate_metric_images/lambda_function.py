@@ -17,12 +17,14 @@ custom_boto3_config = Config(
    }
 )
 to_zone = tz.tzlocal()
-aws_services: Dict[str, Any] = {}
 aws_region: str = os.environ.get('AWS_REGION')
 process_metric_name: Dict[str, str] = {'Windows': 'procstat cpu_usage',
                                        'Linux': 'procstat_cpu_usage'}
 
-aws_services['ec2_resource'] = boto3.resource('ec2',config=custom_boto3_config)
+aws_services: Dict[str, Any] = {
+    'ec2_resource': boto3.resource('ec2', config=custom_boto3_config)
+}
+
 aws_services['sns_client'] = boto3.client('sns',config=custom_boto3_config)
 aws_services['eventbridge_client'] = boto3.client('events',config=custom_boto3_config)
 aws_services['ec2_client'] = boto3.client('ec2',config=custom_boto3_config)
@@ -69,7 +71,7 @@ def lambda_handler(event, context):
             print(f'Do not suppress alarm {alarm_name}.')
             metric_images_urls: Dict[str, str] = create_metric_images_urls(alarm_details, [
                 'CPUUtilization', 'CPUCreditBalance', process_metric_name[platform]], aws_services, instance_type)
-            print(f'Successfully generated the images.')
+            print('Successfully generated the images.')
             suppress_api_url: str = generate_presigned_url(
                 aws_services['secretsmanager_client'], instance_id)
 
@@ -82,7 +84,7 @@ def lambda_handler(event, context):
         print('Aborted! because of above error.')
         return err
     else:
-        print(f'Successfully executed.')
+        print('Successfully executed.')
         return out_event
     finally:
         '''

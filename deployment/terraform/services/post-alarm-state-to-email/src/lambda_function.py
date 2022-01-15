@@ -69,6 +69,6 @@ def write_metric_image_urls_to_message(event,alarm_name,platform):
             processes_detail= '''ProcessesMetric: {0} \n'''.format(metric_images_urls[process_metric_name[platform]])
     except Exception as err:
         print(err)
-        print(f'Could not retrive metric images details.')
+        print('Could not retrive metric images details.')
     finally:
         return alarms_metrics_detail+processes_detail

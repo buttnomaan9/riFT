@@ -36,33 +36,33 @@ def lambda_handler(event, context):
             AlarmTypes=['CompositeAlarm', 'MetricAlarm']
         )
 
-        composite_alarms_names: List[str] = []
-        for alarm in available_alarms['CompositeAlarms']:
-            composite_alarms_names.append(alarm['AlarmName'])
+        composite_alarms_names: List[str] = [
+            alarm['AlarmName'] for alarm in available_alarms['CompositeAlarms']
+        ]
 
-        metric_alarms_names: List[str] = []
-        for alarm in available_alarms['MetricAlarms']:
-            metric_alarms_names.append(alarm['AlarmName'])
+        metric_alarms_names: List[str] = [
+            alarm['AlarmName'] for alarm in available_alarms['MetricAlarms']
+        ]
 
         '''Delete the composite alarms first.'''
-        if len(composite_alarms_names) != 0:
+        if composite_alarms_names:
             cloudwatch_client.delete_alarms(
                 AlarmNames=composite_alarms_names)
             print(
                 f'Successfully deleted these composite alarms {composite_alarms_names}')
         else:
-            print(F'No composite alarm to delete.')
+            print('No composite alarm to delete.')
 
         print('')
 
         '''Delete the metric alarms'''
-        if len(metric_alarms_names) != 0:
+        if metric_alarms_names:
             cloudwatch_client.delete_alarms(
                 AlarmNames=metric_alarms_names)
             print(
                 f'Successfully deleted these metrics alarms {metric_alarms_names}')
         else:
-            print(F'No metric alarm to delete')
+            print('No metric alarm to delete')
 
         print('')
 

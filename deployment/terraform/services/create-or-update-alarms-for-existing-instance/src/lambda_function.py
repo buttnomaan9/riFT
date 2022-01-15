@@ -12,9 +12,10 @@ custom_boto3_config = Config(
         'mode': 'standard'
     }
 )
-aws_services: Dict[str, Any] = {}
-aws_services['ec2_resource'] = boto3.resource(
-    'ec2', config=custom_boto3_config)
+aws_services: Dict[str, Any] = {
+    'ec2_resource': boto3.resource('ec2', config=custom_boto3_config)
+}
+
 aws_services['eventbridge_client'] = boto3.client(
     'events', config=custom_boto3_config)
 
