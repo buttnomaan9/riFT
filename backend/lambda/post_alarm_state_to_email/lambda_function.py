@@ -50,7 +50,7 @@ def lambda_handler(event, context):
         print('Aborted! because of above error.')
         return err
     else:
-        print(f'Successfully executed')
+        print('Successfully executed')
         return {'status_code': 200}
 
 def write_metric_image_urls_to_message(event,alarm_name,platform):

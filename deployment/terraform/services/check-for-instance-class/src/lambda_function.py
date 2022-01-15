@@ -46,7 +46,7 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             print(f'{response}')
 
         print(f'{instance_type}')
-        first_two_character_of_type: str = instance_type[0:2]
+        first_two_character_of_type: str = instance_type[:2]
 
         print(f'Instance class: {first_two_character_of_type}')
        
