@@ -73,7 +73,7 @@ def lambda_handler(event, context):
             ',')
     # Get the alarm configration data from ssm parameter store.
     config:AlarmConfigurationParams = get_configuration_data()
-    
+
     print('Running for below arguments.')
     print(
         f'threshold={config.threshold} period={config.period} datapoints={config.datapoints} evaluation_periods={config.evaluation_periods}')
@@ -86,12 +86,12 @@ def lambda_handler(event, context):
         instance_type = instance.instance_type
 
         print(f'{instance_type}')
-        first_two_character_of_type: str = instance_type[0:2]
+        first_two_character_of_type: str = instance_type[:2]
 
         print(f'Instance class: {first_two_character_of_type}')
 
         if first_two_character_of_type == 't2':
-            print(f'As the instance is of t2 class set threshold as the launch credit')
+            print('As the instance is of t2 class set threshold as the launch credit')
             config.threshold = launch_credits[instance_type]
 
         '''Get the tags to name the alarm'''
@@ -167,7 +167,7 @@ def put_cpu_credit_balance_alarm_for_below_th(alarm_name: str,
     desc: str = ''
     threshold: float = 0.0
     if instance_class != 't2':
-        print(f'Use given threshold value.')
+        print('Use given threshold value.')
         threshold = instances_credit_table[instance_type].vCPU_count * \
             credits_used_per_vcpu_hour
         _80_percent_of_max_credit: float = .8 * \
